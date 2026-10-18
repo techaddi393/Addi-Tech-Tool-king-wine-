@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اعوان کمپیوٹر ڈیجیٹل کنڈا - دریا خان بھکر</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTML2PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Jameel+Noori+Nastaleeq&family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', system-ui, -apple-system, sans-serif;
+            background-color: #f1f5f9;
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-800 text-white shadow-lg no-print">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center flex-wrap gap-3">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <i data-lucide="scale" class="w-8 h-8 text-emerald-300"></i>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide">اعوان کمپیوٹر ڈیجیٹل کنڈا</h1>
+                    <p class="text-xs text-emerald-200">دریا خان، ضلع بھکر | پروپرائٹر: ایم کاشف</p>
+                </div>
+            </div>
+            <div>
+                <button onclick="clearForm()" class="bg-emerald-700 hover:bg-emerald-600 px-3 py-2 rounded text-sm flex items-center gap-1 transition">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> نیا بل
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT PANEL: FORM INPUTS & SETTINGS -->
+        <div class="lg:col-span-6 space-y-6 no-print">
+
+            <div class="bg-white p-5 rounded-xl shadow-md border border-slate-200 space-y-4">
+                <h2 class="text-lg font-bold text-emerald-900 border-b pb-2 flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-5 h-5 text-emerald-600"></i> بنیادی معلومات و فریقین
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">تاریخ (Date)</label>
+                        <input type="date" id="billDate" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">گاڑی / ریڈی / رکشہ نمبر</label>
+                        <input type="text" id="vehicleNo" placeholder="مثلاً: RIA-1234 یا 3 ریڈی" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Seller & Buyer Dropdowns -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
+                    <div>
+                        <label class="text-sm font-semibold text-slate-700 block mb-1">بیچنے والا (فروخت کنندہ / ٹھیکیدار)</label>
+                        <div class="flex gap-1">
+                            <select id="sellerSelect" class="w-full p-2 border border-slate-300 rounded bg-slate-50" onchange="onSellerChange()">
+                                <option value="">نام منتخب کریں...</option>
+                            </select>
+                            <button type="button" onclick="openPartyModal('seller')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded" title="نیا شامل کریں">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-semibold text-slate-700 block mb-1">خریدنے والا (خریدار / مل)</label>
+                        <div class="flex gap-1">
+                            <select id="buyerSelect" class="w-full p-2 border border-slate-300 rounded bg-slate-50" onchange="onBuyerChange()">
+                                <option value="">نام منتخب کریں...</option>
+                            </select>
+                            <button type="button" onclick="openPartyModal('buyer')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded" title="نیا شامل کریں">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone & Rikshaw Count -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">واٹس ایپ / موبائل نمبر (محفوظ رہے گا)</label>
+                        <input type="text" id="contactPhone" placeholder="03001234567" class="w-full p-2 border border-slate-300 rounded" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">ریڈی / رکشوں کی کل تعداد</label>
+                        <input type="number" id="rikshawCount" value="1" min="1" class="w-full p-2 border border-slate-300 rounded" oninput="calculateWeights()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Material & Weights -->
+            <div class="bg-white p-5 rounded-xl shadow-md border border-slate-200 space-y-4">
+                <h2 class="text-lg font-bold text-emerald-900 border-b pb-2 flex items-center gap-2">
+                    <i data-lucide="package" class="w-5 h-5 text-emerald-600"></i> مال کی تفصیل اور وزن
+                </h2>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">مال کی قسم (نوعیت)</label>
+                    <select id="itemType" class="w-full p-2 border border-slate-300 rounded bg-slate-50">
+                        <option value="سفیدہ">سفیدہ</option>
+                        <option value="گولا">گولا</option>
+                        <option value="گٹکا">گٹکا</option>
+                        <option value="پاوا">پاوا</option>
+                        <option value="کریٹ">کریٹ</option>
+                        <option value="ٹوٹے">ٹوٹے</option>
+                        <option value="کھنگر">کھنگر</option>
+                        <option value="مکس مال">مکس مال</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">کل وزن / بھرا وزن (Gross) - KG</label>
+                        <input type="number" id="grossWeight" placeholder="مثلاً: 12500" class="w-full p-2 text-lg font-bold border border-slate-300 rounded" oninput="calculateWeights()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">خالی وزن (Tare) - KG</label>
+                        <input type="number" id="tareWeight" placeholder="مثلاً: 3200" class="w-full p-2 text-lg font-bold border border-slate-300 rounded" oninput="calculateWeights()">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">کٹوتی / منہائی (Deduction in KG)</label>
+                        <input type="number" id="deductionKg" value="0" class="w-full p-2 border border-slate-300 rounded" oninput="calculateWeights()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-slate-700">فی من قیمت / ریٹ (Optional)</label>
+                        <input type="number" id="ratePerMund" placeholder="مثلاً 450" class="w-full p-2 border border-slate-300 rounded" oninput="calculateWeights()">
+                    </div>
+                </div>
+
+                <!-- Live Results -->
+                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
+                    <div>
+                        <span class="text-xs text-slate-500 block">صافی وزن (کلو)</span>
+                        <span id="resNetKg" class="text-xl font-bold text-emerald-800">0 KG</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block">صافی وزن (من و کلو)</span>
+                        <span id="resNetMundKg" class="text-lg font-bold text-slate-800">0 من 0 کلو</span>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <span class="text-xs text-slate-500 block">کل رقم (اندازاً)</span>
+                        <span id="resTotalAmount" class="text-xl font-bold text-emerald-900">0 روپے</span>
+                    </div>
+                </div>
+
+                <button onclick="saveCurrentBill()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-bold text-lg shadow flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i> بل محفوظ کریں (Save)
+                </button>
+            </div>
+
+            <!-- Saved Bills History -->
+            <div class="bg-white p-5 rounded-xl shadow-md border border-slate-200">
+                <h2 class="text-lg font-bold text-emerald-900 border-b pb-2 mb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-emerald-600"></i> محفوظ شدہ بل ریکارڈ</span>
+                    <span id="savedCountBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-bold">0 بل</span>
+                </h2>
+                <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-100 text-slate-700 border-b sticky top-0">
+                            <tr>
+                                <th class="p-2">بل #</th>
+                                <th class="p-2">تاریخ</th>
+                                <th class="p-2">فریقین</th>
+                                <th class="p-2">صافی من</th>
+                                <th class="p-2 text-center">ایکشن</th>
+                            </tr>
+                        </thead>
+                        <tbody id="savedBillsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: PREVIEW & INVOICE -->
+        <div class="lg:col-span-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-300 sticky top-4">
+                
+                <div id="invoice-card" class="p-6 border-2 border-emerald-900 rounded-lg bg-white">
+                    <div class="text-center border-b-2 border-emerald-800 pb-4 mb-4">
+                        <div class="flex justify-between items-start text-xs text-slate-500 mb-1">
+                            <span>بسم اللہ الرحمن الرحیم</span>
+                            <span class="font-semibold text-emerald-900">پرچی نمبر: <span id="lblInvoiceNo">1001</span></span>
+                        </div>
+                        <h1 class="text-3xl font-extrabold text-emerald-900 tracking-wide mb-1">اعوان کمپیوٹر ڈیجیٹل کنڈا</h1>
+                        <p class="text-sm font-semibold text-slate-700">لُکڑ منڈی، دریا خان (ضلع بھکر)</p>
+                        <p class="text-xs text-emerald-800 font-bold mt-1">پروپرائٹر: ایم کاشف - 03001234567</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-sm mb-4 bg-slate-50 p-3 rounded border border-slate-200">
+                        <div><span class="text-slate-500 font-semibold">تاریخ:</span> <span id="lblDate" class="font-bold text-slate-800">--</span></div>
+                        <div><span class="text-slate-500 font-semibold">گاڑی / رکشہ #:</span> <span id="lblVehicle" class="font-bold text-slate-800">--</span></div>
+                        <div><span class="text-slate-500 font-semibold">بیچنے والا:</span> <span id="lblSeller" class="font-bold text-emerald-900">--</span></div>
+                        <div><span class="text-slate-500 font-semibold">خریدنے والا:</span> <span id="lblBuyer" class="font-bold text-emerald-900">--</span></div>
+                        <div><span class="text-slate-500 font-semibold">رکشوں کی تعداد:</span> <span id="lblRikshawCount" class="font-bold text-slate-800">1</span></div>
+                        <div><span class="text-slate-500 font-semibold">رابطہ نمبر:</span> <span id="lblPhone" class="font-bold text-slate-800" dir="ltr">--</span></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <table class="w-full text-center border-collapse border border-slate-300 text-sm">
+                            <thead>
+                                <tr class="bg-emerald-800 text-white">
+                                    <th class="border border-slate-300 p-2">مال کی تفصیل</th>
+                                    <th class="border border-slate-300 p-2">کل وزن</th>
+                                    <th class="border border-slate-300 p-2">خالی وزن</th>
+                                    <th class="border border-slate-300 p-2">کٹوتی</th>
+                                    <th class="border border-slate-300 p-2">صافی وزن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="lblItemType" class="border border-slate-300 p-2 font-bold text-slate-800">سفیدہ</td>
+                                    <td id="lblGross" class="border border-slate-300 p-2">0 KG</td>
+                                    <td id="lblTare" class="border border-slate-300 p-2">0 KG</td>
+                                    <td id="lblDeduction" class="border border-slate-300 p-2">0 KG</td>
+                                    <td id="lblNetKg" class="border border-slate-300 p-2 font-bold text-emerald-800">0 KG</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-emerald-100 border-2 border-emerald-600 rounded-lg p-4 mb-4 text-center">
+                        <span class="text-xs text-emerald-900 font-bold block mb-1">کُل صافی وزن (من و کلوگرام)</span>
+                        <div class="text-2xl font-black text-emerald-950" id="lblNetMundKgDisplay">
+                            0 <span class="text-base font-normal">من</span> 0 <span class="text-base font-normal">کلوگرام</span>
+                        </div>
+                        <div class="text-xs text-slate-600 mt-1" id="lblRateAndTotalDisplay">(40 کلو گرام = 1 من)</div>
+                    </div>
+
+                    <div class="flex justify-between items-end pt-6 text-xs text-slate-600">
+                        <div class="text-center border-t border-slate-400 pt-1 w-28">دستخط ڈرائیور / ٹھیکیدار</div>
+                        <div class="text-center border-t border-slate-400 pt-1 w-28">دستخط کنڈا آپریٹر (کاشف)</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 space-y-3 no-print">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="downloadPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> PDF بل ڈاؤنلوڈ
+                        </button>
+                        <button onclick="sendWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-3 rounded flex items-center justify-center gap-2">
+                            <i data-lucide="message-square" class="w-4 h-4"></i> واٹس ایپ پر بھیجیں
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="sendSMS()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-3 rounded flex items-center justify-center gap-2">
+                            <i data-lucide="phone-call" class="w-4 h-4"></i> SMS بھیجیں
+                        </button>
+                        <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 rounded flex items-center justify-center gap-2">
+                            <i data-lucide="printer" class="w-4 h-4"></i> پرنٹ کریں
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Parties -->
+    <div id="partyModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4 no-print">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-emerald-900 border-b pb-2 flex justify-between items-center">
+                <span id="modalTitle">نیا فریق شامل کریں</span>
+                <button onclick="closePartyModal()" class="text-slate-400 hover:text-slate-600">&times;</button>
+            </h3>
+            <div>
+                <label class="block text-sm font-semibold mb-1">نام (Name)</label>
+                <input type="text" id="modalPartyName" placeholder="مثلاً: حاجی سلیم" class="w-full p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">موبائل / واٹس ایپ نمبر</label>
+                <input type="text" id="modalPartyPhone" placeholder="03001234567" class="w-full p-2 border rounded" dir="ltr">
+            </div>
+            <div class="flex justify-end gap-2 border-t pt-3">
+                <button onclick="closePartyModal()" class="bg-slate-200 text-slate-800 px-4 py-2 rounded">منسوخ</button>
+                <button onclick="savePartyModal()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold">محفوظ کریں</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let sellers = JSON.parse(localStorage.getItem('awan_sellers')) || [
+            { id: 1, name: 'حاجی رشید ٹھیکیدار', phone: '03001234567' }
+        ];
+        let buyers = JSON.parse(localStorage.getItem('awan_buyers')) || [
+            { id: 1, name: 'رحمان چپ بورڈ ملز', phone: '03021122334' }
+        ];
+        let savedBills = JSON.parse(localStorage.getItem('awan_saved_bills')) || [];
+        let currentActiveBillId = null;
+        let currentModalTarget = 'seller';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+            populatePartyDropdowns();
+            renderSavedBillsTable();
+            calculateWeights();
+        });
+
+        function populatePartyDropdowns() {
+            const sSelect = document.getElementById('sellerSelect');
+            const bSelect = document.getElementById('buyerSelect');
+
+            sSelect.innerHTML = '<option value="">نام منتخب کریں...</option>';
+            sellers.forEach(s => {
+                sSelect.innerHTML += `<option value="${s.id}">${s.name} (${s.phone || 'کوئی نمبر نہیں'})</option>`;
+            });
+
+            bSelect.innerHTML = '<option value="">نام منتخب کریں...</option>';
+            buyers.forEach(b => {
+                bSelect.innerHTML += `<option value="${b.id}">${b.name} (${b.phone || 'کوئی نمبر نہیں'})</option>`;
+            });
+        }
+
+        function onSellerChange() {
+            const val = document.getElementById('sellerSelect').value;
+            const seller = sellers.find(s => s.id == val);
+            if (seller && seller.phone) {
+                document.getElementById('contactPhone').value = seller.phone;
+            }
+            calculateWeights();
+        }
+
+        function onBuyerChange() { calculateWeights(); }
+
+        function openPartyModal(target) {
+            currentModalTarget = target;
+            document.getElementById('modalTitle').innerText = target === 'seller' ? 'نیا بیچنے والا شامل کریں' : 'نیا خریدار شامل کریں';
+            document.getElementById('modalPartyName').value = '';
+            document.getElementById('modalPartyPhone').value = '';
+            document.getElementById('partyModal').classList.remove('hidden');
+            document.getElementById('partyModal').classList.add('flex');
+        }
+
+        function closePartyModal() {
+            document.getElementById('partyModal').classList.add('hidden');
+            document.getElementById('partyModal').classList.remove('flex');
+        }
+
+        function savePartyModal() {
+            const name = document.getElementById('modalPartyName').value.trim();
+            const phone = document.getElementById('modalPartyPhone').value.trim();
+            if (!name) { alert('نام درج کریں'); return; }
+
+            const newParty = { id: Date.now(), name, phone };
+            if (currentModalTarget === 'seller') sellers.push(newParty);
+            else buyers.push(newParty);
+
+            localStorage.setItem('awan_sellers', JSON.stringify(sellers));
+            localStorage.setItem('awan_buyers', JSON.stringify(buyers));
+            populatePartyDropdowns();
+
+            if (currentModalTarget === 'seller') {
+                document.getElementById('sellerSelect').value = newParty.id;
+                onSellerChange();
+            } else {
+                document.getElementById('buyerSelect').value = newParty.id;
+            }
+            closePartyModal();
+        }
+
+        function calculateWeights() {
+            const gross = parseFloat(document.getElementById('grossWeight').value) || 0;
+            const tare = parseFloat(document.getElementById('tareWeight').value) || 0;
+            const deduction = parseFloat(document.getElementById('deductionKg').value) || 0;
+            const rate = parseFloat(document.getElementById('ratePerMund').value) || 0;
+            const rikshaw = parseInt(document.getElementById('rikshawCount').value) || 1;
+
+            let netKg = gross - tare - deduction;
+            if (netKg < 0) netKg = 0;
+
+            const munds = Math.floor(netKg / 40);
+            const extraKg = netKg % 40;
+            const totalAmount = Math.round((netKg / 40) * rate);
+
+            document.getElementById('resNetKg').innerText = netKg.toLocaleString() + ' KG';
+            document.getElementById('resNetMundKg').innerText = `${munds} من ${extraKg} کلو`;
+            document.getElementById('resTotalAmount').innerText = totalAmount.toLocaleString() + ' روپے';
+
+            document.getElementById('lblDate').innerText = document.getElementById('billDate').value || '--';
+            document.getElementById('lblVehicle').innerText = document.getElementById('vehicleNo').value || '--';
+            
+            const sObj = sellers.find(s => s.id == document.getElementById('sellerSelect').value);
+            document.getElementById('lblSeller').innerText = sObj ? sObj.name : '--';
+
+            const bObj = buyers.find(b => b.id == document.getElementById('buyerSelect').value);
+            document.getElementById('lblBuyer').innerText = bObj ? bObj.name : '--';
+
+            document.getElementById('lblPhone').innerText = document.getElementById('contactPhone').value || '--';
+            document.getElementById('lblRikshawCount').innerText = rikshaw;
+            document.getElementById('lblItemType').innerText = document.getElementById('itemType').value;
+            document.getElementById('lblGross').innerText = gross.toLocaleString() + ' KG';
+            document.getElementById('lblTare').innerText = tare.toLocaleString() + ' KG';
+            document.getElementById('lblDeduction').innerText = deduction.toLocaleString() + ' KG';
+            document.getElementById('lblNetKg').innerText = netKg.toLocaleString() + ' KG';
+            document.getElementById('lblNetMundKgDisplay').innerHTML = `${munds} <span class="text-base font-normal">من</span> ${extraKg} <span class="text-base font-normal">کلوگرام</span>`;
+
+            if (rate > 0) {
+                document.getElementById('lblRateAndTotalDisplay').innerText = `ریٹ: ${rate} روپے فی من | کل رقم: ${totalAmount.toLocaleString()} روپے`;
+            } else {
+                document.getElementById('lblRateAndTotalDisplay').innerText = `(40 کلو گرام = 1 من)`;
+            }
+        }
+
+        function saveCurrentBill() {
+            const gross = parseFloat(document.getElementById('grossWeight').value) || 0;
+            if (gross <= 0) { alert('درُست کل وزن درج کریں!'); return; }
+
+            const billData = {
+                id: currentActiveBillId || 'INV-' + Math.floor(1000 + Math.random() * 9000),
+                date: document.getElementById('billDate').value,
+                vehicleNo: document.getElementById('vehicleNo').value,
+                sellerId: document.getElementById('sellerSelect').value,
+                buyerId: document.getElementById('buyerSelect').value,
+                phone: document.getElementById('contactPhone').value,
+                rikshawCount: document.getElementById('rikshawCount').value,
+                itemType: document.getElementById('itemType').value,
+                gross: gross,
+                tare: parseFloat(document.getElementById('tareWeight').value) || 0,
+                deduction: parseFloat(document.getElementById('deductionKg').value) || 0,
+                rate: parseFloat(document.getElementById('ratePerMund').value) || 0
+            };
+
+            if (currentActiveBillId) {
+                const idx = savedBills.findIndex(b => b.id === currentActiveBillId);
+                if (idx !== -1) savedBills[idx] = billData;
+            } else {
+                savedBills.unshift(billData);
+            }
+
+            localStorage.setItem('awan_saved_bills', JSON.stringify(savedBills));
+            document.getElementById('lblInvoiceNo').innerText = billData.id;
+            renderSavedBillsTable();
+            alert('بل کامیابی سے محفوظ ہو گیا!');
+        }
+
+        function renderSavedBillsTable() {
+            const tbody = document.getElementById('savedBillsTableBody');
+            tbody.innerHTML = '';
+            document.getElementById('savedCountBadge').innerText = savedBills.length + ' بل';
+
+            if (savedBills.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-slate-400">کوئی محفوظ بل موجود نہیں۔</td></tr>`;
+                return;
+            }
+
+            savedBills.forEach(b => {
+                const sObj = sellers.find(s => s.id == b.sellerId);
+                const bObj = buyers.find(buy => buy.id == b.buyerId);
+                const net = b.gross - b.tare - b.deduction;
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2 font-bold text-emerald-800">${b.id}</td>
+                        <td class="p-2">${b.date}</td>
+                        <td class="p-2">${sObj ? sObj.name : ''} / ${bObj ? bObj.name : ''}</td>
+                        <td class="p-2 font-semibold">${Math.floor(net / 40)} من ${net % 40} کلو</td>
+                        <td class="p-2 text-center flex justify-center gap-1">
+                            <button onclick="editBill('${b.id}')" class="bg-blue-100 text-blue-700 p-1 rounded"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                            <button onclick="deleteBill('${b.id}')" class="bg-red-100 text-red-700 p-1 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            lucide.createIcons();
+        }
+
+        function editBill(id) {
+            const bill = savedBills.find(b => b.id === id);
+            if (!bill) return;
+            currentActiveBillId = bill.id;
+            document.getElementById('lblInvoiceNo').innerText = bill.id;
+            document.getElementById('billDate').value = bill.date;
+            document.getElementById('vehicleNo').value = bill.vehicleNo;
+            document.getElementById('sellerSelect').value = bill.sellerId;
+            document.getElementById('buyerSelect').value = bill.buyerId;
+            document.getElementById('contactPhone').value = bill.phone;
+            document.getElementById('rikshawCount').value = bill.rikshawCount;
+            document.getElementById('itemType').value = bill.itemType;
+            document.getElementById('grossWeight').value = bill.gross;
+            document.getElementById('tareWeight').value = bill.tare;
+            document.getElementById('deductionKg').value = bill.deduction;
+            document.getElementById('ratePerMund').value = bill.rate;
+            calculateWeights();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteBill(id) {
+            if (confirm('کیا آپ بل ڈیلیٹ کرنا چاہتے ہیں؟')) {
+                savedBills = savedBills.filter(b => b.id !== id);
+                localStorage.setItem('awan_saved_bills', JSON.stringify(savedBills));
+                renderSavedBillsTable();
+                if (currentActiveBillId === id) clearForm();
+            }
+        }
+
+        function clearForm() {
+            currentActiveBillId = null;
+            document.getElementById('lblInvoiceNo').innerText = '1001';
+            document.getElementById('vehicleNo').value = '';
+            document.getElementById('grossWeight').value = '';
+            document.getElementById('tareWeight').value = '';
+            document.getElementById('deductionKg').value = '0';
+            document.getElementById('ratePerMund').value = '';
+            document.getElementById('rikshawCount').value = '1';
+            calculateWeights();
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('invoice-card');
+            const opt = {
+                margin: 10,
+                filename: `Kanda_Bill_${document.getElementById('lblInvoiceNo').innerText}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function sendWhatsApp() {
+            const phone = document.getElementById('contactPhone').value.trim();
+            if (!phone) { alert('واٹس ایپ نمبر درج کریں!'); return; }
+
+            const text = `*اعوان کمپیوٹر ڈیجیٹل کنڈا دریا خان*%0A` +
+                         `*پرچی نمبر:* ${document.getElementById('lblInvoiceNo').innerText}%0A` +
+                         `*تاریخ:* ${document.getElementById('billDate').value}%0A` +
+                         `*بیچنے والا:* ${document.getElementById('lblSeller').innerText}%0A` +
+                         `*خریدنے والا:* ${document.getElementById('lblBuyer').innerText}%0A` +
+                         `*مال:* ${document.getElementById('lblItemType').innerText}%0A` +
+                         `*کل وزن:* ${document.getElementById('lblGross').innerText} | *خالی:* ${document.getElementById('lblTare').innerText}%0A` +
+                         `*صافی وزن:* ${document.getElementById('lblNetMundKgDisplay').innerText}%0A` +
+                         `شکریہ! پروپرائٹر ایم کاشف`;
+
+            let formatted = phone.replace(/[^0-9]/g, '');
+            if (formatted.startsWith('0')) formatted = '92' + formatted.substring(1);
+            window.open(`https://api.whatsapp.com/send?phone=${formatted}&text=${text}`, '_blank');
+        }
+
+        function sendSMS() {
+            const phone = document.getElementById('contactPhone').value.trim();
+            if (!phone) { alert('موبائل نمبر درج کریں!'); return; }
+            const text = `Awan Kanda Bill#${document.getElementById('lblInvoiceNo').innerText}: Net Weight = ${document.getElementById('lblNetMundKgDisplay').innerText}. M.Kashif Darya Khan.`;
+            window.open(`sms:${phone}?body=${encodeURIComponent(text)}`, '_self');
+        }
+    </script>
+</body>
+</html>
